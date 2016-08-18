@@ -167,6 +167,13 @@
             }
             postMessageApi.window.destroy();
         });
+        $('#js_select_all').on('click', function() {
+            $('.js_payments_checkbox, .js_issuers_checkbox').prop('checked', ($(this).prop('checked') == true));
+        });
+        $('.js_payments_checkbox').on('click', function() {
+            var id = $(this).val();
+            $('.issuers'+id).prop('checked', ($(this).prop('checked') == true));
+        });
     });
 </script>
 {/block}

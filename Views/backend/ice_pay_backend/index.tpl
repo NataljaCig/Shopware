@@ -4,6 +4,8 @@
     <div class="page-header">
         <h1>Ice Pay Payments</h1>
     </div>
+    <label>Select All</label>
+    <input type="checkbox" id="js_select_all"/>
     <form method="post" action="/backend/IcePayBackend/updateCustomPaymets">
         <ul>
             {foreach $payments as $payment}
@@ -11,7 +13,7 @@
                     <input name="PaymentCode[]" value="{$payment->payment_code}" type="hidden"/>
                     <input name="PaymentName[]" value="{$payment->name}" type="text"/>
                     <input name="PaymentPosition[]" value="{$payment->position}" type="text"/>
-                    <input name="PaymentState[]" value="{$payment->id}" type="checkbox" {if $payment->state}checked{/if}/>
+                    <input name="PaymentState[]" class="js_payments_checkbox" value="{$payment->id}" type="checkbox" {if $payment->state}checked{/if}/>
                 </li>
                 <ul>
                     {foreach $issuers as $issuer}
@@ -20,7 +22,7 @@
                                 <input name="IssuerCode[]" value="{$issuer->issuer_code}" type="hidden"/>
                                 <input name="IssuerName[]" value="{$issuer->name}" type="text"/>
                                 <input name="IssuerPosition[]" value="{$issuer->position}" type="text"/>
-                                <input name="IssuerState[]" value="{$issuer->id}" type="checkbox" {if $issuer->state}checked{/if}/>
+                                <input name="IssuerState[]" class="js_issuers_checkbox issuers{$payment->id}" value="{$issuer->id}" type="checkbox" {if $issuer->state}checked{/if}/>
                             </li>
                         {/if}
                     {/foreach}
