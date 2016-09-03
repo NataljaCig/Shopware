@@ -12,13 +12,24 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
     public $order;
     public $basket;
     public $session;
+    public $db;
 
     public function init()
     {
+        $this->db = Shopware()->Db();
         $this->order = Shopware()->Modules()->Order();
         $this->admin = Shopware()->Modules()->Admin()->sGetUserData();
         $this->basket = Shopware()->Modules()->Basket()->sGetBasket();
         $this->session = Shopware()->Session();
+    }
+
+
+    public function getOrderIdByOrderNumber($orderNumber)
+    {
+        return $this->db->fetchOne(
+            'SELECT id FROM s_order WHERE ordernumber = :orderNumber;',
+            array(':orderNumber' => $orderNumber)
+        );
     }
 
 
@@ -43,7 +54,9 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
             {
                 $order = Shopware()->Modules()->Order()->getOrderById(((int)$responseArray['OrderID'])-10000);
                 if ($order) {
-                    $this->saveOrder($responseArray['PaymentID']);
+                    $orderNumber = $this->saveOrder($responseArray['PaymentID']);
+                    $orderId = $this->getOrderIdByOrderNumber($orderNumber);
+                    $this->order->setPaymentStatus($orderId, \Shopware\Models\Order\Status::PAYMENT_STATE_COMPLETELY_PAID, true);
                     return $this->redirect('/checkout/finish/sUniqueID/'.$order['temporaryID']);
                 } else {
                     return $this->redirect('/');
@@ -77,6 +90,7 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
 
 
     public function pendingAction() {
+        $this->saveOrder('');
         $pendingText = Shopware()->Plugins()->Frontend()->IcePay()->getPendingText();
         $backToShopUrl = '/';
         $backToShopTitle = 'Back to shop';
@@ -92,7 +106,6 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
 
 
     public function indexAction() {
-
         $payments = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.state = 1 ORDER BY p.position")->getResult();
         $issuers = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i WHERE i.state = 1 ORDER BY i.position")->getResult();
         $this->View()->assign('payments', $payments);
@@ -168,7 +181,7 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
 
 
 
-    public function saveOrder($transactionId)
+    public function saveOrder($transactionId = '')
     {
         $sUserData = $this->admin;
         $sBasket = $this->basket;
