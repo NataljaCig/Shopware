@@ -110,7 +110,7 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
         ));
 
 
-        $this->Form()->setElement('text', 'fail-text', array(
+        $this->Form()->setElement('text', 'pending-text', array(
             'value' => '',
             'label' => 'Text which user will see when payment pending'
         ));
