@@ -33,6 +33,39 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
     }
 
 
+    public function postbackAction() {
+        $model = new IcePay();
+        $methodUrl = IcePay::GET_PAYMENT_URL;
+
+        $queryArray = [
+            "Timestamp" => date('Y-m-d\TH:i:s'),
+            "PaymentID" => $_REQUEST['PaymentID'],
+        ];
+
+        $model->setQueryParams($queryArray);
+        $headers = $model->getHeaders($methodUrl);
+        $querySender = new IcePayQuerySender($methodUrl, $headers, $queryArray);
+        if ($responseArray = $querySender->sendQuery()) {
+            if (isset($responseArray['Status']) == 'OK') {
+                $order = Shopware()->Modules()->Order()->getOrderById(((int)$responseArray['OrderID'])-10000);
+                if ($order) {
+                    $orderNumber = $this->saveOrder($responseArray['PaymentID']);
+                    $orderId = $this->getOrderIdByOrderNumber($orderNumber);
+                    $this->order->setPaymentStatus($orderId, \Shopware\Models\Order\Status::PAYMENT_STATE_COMPLETELY_PAID, true);
+                }
+            } elseif (isset($responseArray['Status']) == 'CANCELLED') {
+                $order = Shopware()->Modules()->Order()->getOrderById(((int)$responseArray['OrderID'])-10000);
+                if ($order) {
+                    $orderNumber = $this->saveOrder($responseArray['PaymentID']);
+                    $orderId = $this->getOrderIdByOrderNumber($orderNumber);
+                    $this->order->setPaymentStatus($orderId, \Shopware\Models\Order\Status::PAYMENT_STATE_DELAYED, true);
+                }
+            }
+        }
+        die();
+    }
+
+
     public function successfulPaymentAction() {
         if ($_REQUEST['Status'] == 'OPEN') {
             return $this->redirect('/frontend/icepay/pending');
@@ -146,6 +179,12 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
         $userId = $this->admin['additional']['user']['id'];
         $successfulUrl = $icePayPlugin->getSuccessUrl();
         $failUrl = $icePayPlugin->getFailUrl();
+        if (!$successfulUrl) {
+            $successfulUrl = $model->getSuccessfulUrl();
+        }
+        if (!$failUrl) {
+            $failUrl = $model->getFailUrl();
+        }
 
         if ($icePayPlugin->isTestMode() and !in_array($userId, $icePayPlugin->getTestUsersIds())) {
             return $this->redirect('/checkout/confirm');

@@ -83,13 +83,18 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
 
         $this->Form()->setElement('text', 'success-url', array(
             'value' => '',
-            'label' => 'Return url on successful payment'
+            'label' => 'Return url on successful payment. If blank use "/frontend/icepay/successfulPayment"'
+        ));
+
+        $this->Form()->setElement('text', 'postback-url', array(
+            'value' => '',
+            'label' => 'Postback url. This is the page to which payment information will be sent.'
         ));
 
 
         $this->Form()->setElement('text', 'fail-url', array(
             'value' => '',
-            'label' => 'Return url on failed payment'
+            'label' => 'Return url on failed payment. If blank use "/frontend/icepay/failPayment"'
         ));
 
 
