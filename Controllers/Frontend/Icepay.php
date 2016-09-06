@@ -111,8 +111,19 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
     public function indexAction() {
         $payments = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.state = 1 ORDER BY p.position")->getResult();
         $issuers = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i WHERE i.state = 1 ORDER BY i.position")->getResult();
+        foreach ($payments as $k => $payment) {
+            $payments[$k]->issuers = [];
+            foreach ($issuers as $issuer) {
+                if ($issuer->payment_id == $payment->id) {
+                    $payments[$k]->issuers[] = $issuer;
+                    continue;
+                }
+            }
+        }
+        foreach ($payments as $k => $payment) {
+            $payments[$k]->isEmptyIssuers = empty($payment->issuers);
+        }
         $this->View()->assign('payments', $payments);
-        $this->View()->assign('issuers', $issuers);
         $this->View()->assign('routeToShippingItemTpl', __DIR__.'/../../Views/frontend/icepay/shipping_item.tpl');
         $this->View()->assign('routeToShippingStepsTpl', __DIR__.'/../../Views/frontend/icepay/steps.tpl');
     }
@@ -124,7 +135,8 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
         }
 
         $payment = $_REQUEST['payment'];
-        $issuer = isset($_REQUEST['issuer']) ? $_REQUEST['issuer'] : $payment;
+        $issuer = $_REQUEST['issuer'];
+
 
         $model = new IcePay();
 
@@ -153,7 +165,6 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
             "Description" => "Order from the web shop",
             "EndUserIP" => $userIp,
             "PaymentMethod" => $payment,
-            "Issuer" => $issuer,
             "Language" => "EN",
             "OrderID" => ($orderId['id'] + 10000),
             "URLCompleted" => $successfulUrl,

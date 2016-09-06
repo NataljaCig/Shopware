@@ -50,11 +50,15 @@
                 $('.payment_item').removeClass('active');
                 $(this).addClass('active');
                 $('input[name=issuer]:checked').prop('checked',false);
+                var el = $(this).parent().parent().find('input[name=issuer]')[0];
+                $(el).prop('checked', true);
                 $('.method--bankdata:not(.is-hidden)').addClass('is--hidden');
                 $('.issuers_'+id).removeClass('is--hidden');
                 $('#payment_method'+id).prop('checked',true);
             });
             var selectedId = $('input[name=payment]:checked').data('id');
+            var el = $('input[name=payment]:checked').parent().parent().find('input[name=issuer]')[0];
+            $(el).prop('checked', true);
             $('.payment_item').removeClass('active');
             $('.payment_item'+selectedId).addClass('active');
             $('.issuers_'+selectedId).removeClass('is--hidden');

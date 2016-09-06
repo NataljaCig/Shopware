@@ -43,7 +43,7 @@
                     <div class="payment--method-logo payment_logo_{$payment->name}"></div>
                     <div class="method--bankdata is--hidden issuers_{$payment->payment_code}">
                         <div class="debit">
-                            {foreach $issuers as $issuer}
+                            {foreach $payment->issuers as $issuer}
                                 {if $issuer->payment_id == $payment->id}
                                     <div class="none" style="display: inline-block; width: 100%;">
                                         <input type="radio" required name="issuer" style="float:left; margin-right: 20px; margin-top: 8px;" class="" value="{$issuer->issuer_code}" style="margin-right: 10px;"/>
@@ -51,6 +51,12 @@
                                     </div>
                                 {/if}
                             {/foreach}
+                            {if $payment->isEmptyIssuers}
+                                <div class="none" style="display: none; width: 100%;">
+                                    <input type="radio" required name="issuer" style="float:left; margin-right: 20px; margin-top: 8px;" class="" value="DEFAULT" style="margin-right: 10px;"/>
+                                    <label for="issuer" style="float:left;">{$payment->name}</label>
+                                </div>
+                            {/if}
                         </div>
                     </div>
                 {/block}
