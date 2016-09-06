@@ -46,7 +46,7 @@
                             {foreach $issuers as $issuer}
                                 {if $issuer->payment_id == $payment->id}
                                     <div class="none" style="display: inline-block; width: 100%;">
-                                        <input type="radio" name="issuer" style="float:left; margin-right: 20px; margin-top: 8px;" class="" value="{$issuer->issuer_code}" style="margin-right: 10px;"/>
+                                        <input type="radio" required name="issuer" style="float:left; margin-right: 20px; margin-top: 8px;" class="" value="{$issuer->issuer_code}" style="margin-right: 10px;"/>
                                         <label for="issuer" style="float:left;">{$issuer->name}</label>
                                     </div>
                                 {/if}

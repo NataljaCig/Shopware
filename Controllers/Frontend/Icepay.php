@@ -76,6 +76,9 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
 
 
     public function failedPaymentAction() {
+        if ($_REQUEST['Status'] == 'OPEN') {
+            return $this->redirect('/frontend/icepay/pending');
+        }
         $failText = Shopware()->Plugins()->Frontend()->IcePay()->getFailText();
         $backToShopUrl = '/';
         $backToShopTitle = 'Back to shop';
