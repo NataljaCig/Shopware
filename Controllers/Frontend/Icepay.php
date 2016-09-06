@@ -166,6 +166,7 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
             "EndUserIP" => $userIp,
             "PaymentMethod" => $payment,
             "Language" => "EN",
+            "Issuer" => $issuer,
             "OrderID" => ($orderId['id'] + 10000),
             "URLCompleted" => $successfulUrl,
             "URLError" => $failUrl
