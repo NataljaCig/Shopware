@@ -81,6 +81,17 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
             'label' => 'Test Mode (has access only for selected Users below)'
         ));
 
+        $this->Form()->setElement('text', 'success-url', array(
+            'value' => '',
+            'label' => 'Return url on successful payment'
+        ));
+
+
+        $this->Form()->setElement('text', 'fail-url', array(
+            'value' => '',
+            'label' => 'Return url on failed payment'
+        ));
+
 
         $this->Form()->setElement('text', 'user_ids', array(
             'value' => '',
@@ -156,6 +167,15 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
 
     public function isTestMode() {
         return $this->Config()->get('test-mode');
+    }
+
+
+    public function getSuccessUrl() {
+        return $this->Config()->get('success-url');
+    }
+
+    public function getFailUrl() {
+        return $this->Config()->get('fail-url');
     }
 
 

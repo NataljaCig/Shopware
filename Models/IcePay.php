@@ -8,9 +8,6 @@ class IcePay
     const CHECKOUT_URL = 'https://connect.icepay.com/webservice/api/v1/payment/checkout/';
     const GET_PAYMENT_URL = 'https://connect.icepay.com/webservice/api/v1/payment/GetPayment/';
     const GET_PAYMENT_METHODS = 'https://connect.icepay.com/webservice/api/v1/payment/GetMyPaymentMethods/';
-    const PENDING = '/frontend/icepay/pendingPayment';
-    const SUCCESS_URL = '/frontend/icepay/successfulPayment';
-    const FAIL_URL = '/frontend/icepay/failedPayment';
 
     public $_params;
     private $db;

@@ -86,6 +86,15 @@ class IcePayPayments extends ModelEntity
         $headers = $model->getHeaders($methodUrl);
         $querySender = new IcePayQuerySender($methodUrl, $headers, $queryArray);
         $response = $querySender->sendQuery();
+        if (!isset($response['Message'])) {
+            $sql= "DELETE FROM s_ice_pay_payments WHERE 1";
+            Shopware()->Db()->query($sql);
+
+            $sql= "DELETE FROM s_ice_pay_issuers WHERE 1";
+            Shopware()->Db()->query($sql);
+        } else {
+            var_dump('Have some problem');die();
+        }
         foreach ($response['PaymentMethods'] as $key => $paymentMethod) {
             $payment = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.payment_code = '{$paymentMethod['PaymentMethodCode']}'")
                 ->getResult();

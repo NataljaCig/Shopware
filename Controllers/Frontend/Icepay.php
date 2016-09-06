@@ -141,11 +141,11 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
         $model = new IcePay();
 
         $methodUrl = IcePay::CHECKOUT_URL;
-        $successfulUrl = $model->getSuccessfulUrl();
-        $failUrl = $model->getFailUrl();
 
         $icePayPlugin = Shopware()->Plugins()->Frontend()->IcePay();
         $userId = $this->admin['additional']['user']['id'];
+        $successfulUrl = $icePayPlugin->getSuccessUrl();
+        $failUrl = $icePayPlugin->getFailUrl();
 
         if ($icePayPlugin->isTestMode() and !in_array($userId, $icePayPlugin->getTestUsersIds())) {
             return $this->redirect('/checkout/confirm');
