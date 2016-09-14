@@ -92,7 +92,7 @@ class Shopware_Controllers_Backend_IcePayBackend extends Enlight_Controller_Acti
         $uploadDirectory = __DIR__."/../../../../../../../../files/images/icepay";
 
         if (!is_dir($uploadDirectory)) {
-            mkdir($uploadDirectory);
+            mkdir($uploadDirectory, 0777);
         }
 
         foreach ($requestData['PaymentCode'] as $key => $paymentCode) {
