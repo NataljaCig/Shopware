@@ -74,10 +74,11 @@ class Shopware_Controllers_Backend_IcePayBackend extends Enlight_Controller_Acti
 
     public function indexAction()
     {
-        $payments = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p ORDER BY p.position")->getResult();
-        $issuers = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i ORDER BY i.position")->getResult();
+        $payments = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.state_backend = 1 ORDER BY p.position")->getResult();
+        $issuers = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i WHERE i.state_backend = 1 ORDER BY i.position")->getResult();
         $this->View()->assign('payments', $payments);
         $this->View()->assign('issuers', $issuers);
+        $this->View()->assign('uploadDir', "/files/images/icepay/");
     }
 
     public function refreshPaymentsAction() {
@@ -87,10 +88,27 @@ class Shopware_Controllers_Backend_IcePayBackend extends Enlight_Controller_Acti
 
     public function updateCustomPaymetsAction() {
         $requestData = $this->Request()->getParams();
+
+        $uploadDirectory = __DIR__."/../../../../../../../../files/images/icepay";
+
+        if (!is_dir($uploadDirectory)) {
+            mkdir($uploadDirectory);
+        }
+
         foreach ($requestData['PaymentCode'] as $key => $paymentCode) {
             $payment = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.payment_code = '{$paymentCode}'")
                 ->getResult();
+
             $payment = $payment[0];
+            $tmp_name = $_FILES["PaymentImage"]["tmp_name"][$key];
+            $name = $_FILES["PaymentImage"]["name"][$key];
+            if ($tmp_name) {
+                $payment->image = $name;
+                if (!file_exists($uploadDirectory."/".$name)) {
+                    move_uploaded_file($tmp_name, $uploadDirectory."/".$name);
+                }
+            }
+
             $payment->name = $requestData['PaymentName'][$key];
             $payment->position = $requestData['PaymentPosition'][$key];
             $state = false;

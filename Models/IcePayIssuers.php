@@ -57,9 +57,16 @@ class IcePayIssuers extends ModelEntity
     /**
      * @var integer $state
      *
-     * @ORM\Column(name="state", type="integer", nullable=true)
+     * @ORM\Column(name="state", type="integer", nullable=false)
      */
-    public $state = null;
+    public $state = 0;
+
+    /**
+     * @var integer $state
+     *
+     * @ORM\Column(name="state_backend", type="integer", nullable=false)
+     */
+    public $state_backend = 0;
 
     /**
      * @var integer $payment_id
@@ -74,6 +81,7 @@ class IcePayIssuers extends ModelEntity
         $this->payment_id = $payment_id;
         $this->position = $order;
         $this->state = 0;
+        $this->state_backend = 0;
     }
 
 }

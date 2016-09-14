@@ -2,23 +2,25 @@
 
 {block name='frontend_checkout_payment_content'}
     <style>
-        .active {
-            float: left;
-            vertical-align: middle;
+        .payment--method .active {
+            border-color: #3b99fc;
+            border-radius: 10px;
             margin-right: 20px;
-            border-radius: 8px;
-            background: #3b99fc;
+            overflow: hidden;
         }
-        .active img {
-            vertical-align: middle;
-            float: left;
-            margin-right: 4px;
-            margin-top: 4px;
-            margin-left: 4px;
+        .payment_img {
+            border: 4px solid transparent;
+            margin-right: 20px;
+            height: 35px;
+            float:left;
+            overflow: visible;
         }
         .payment_item {
             float: left;
             margin-right: 20px;
+        }
+        .hidden {
+            display: none;
         }
     </style>
     <div class="panel--body is--wide block-group" xmlns="http://www.w3.org/1999/html">
@@ -29,7 +31,8 @@
                 {* Radio Button *}
                 {block name='frontend_checkout_payment_fieldset_input_radio'}
                     <div class="" style="display: inline-block;">
-                        <input style ="height:40px;" type="radio" name="payment" class="js_showHideIssuers payment_item {if $i == 0}active{/if} payment_item{$payment->payment_code}" data-id="{$payment->payment_code}" value="{$payment->payment_code}" id="payment_method{$payment->payment_code}" {if $i == 0}checked="checked"{/if} />
+                        <input style="{if $payment->image}display: none;{/if}height: 39px;" type="radio" name="payment" class="js_showHideIssuers payment_item {if $i == 0}active{/if} payment_item{$payment->payment_code}" data-id="{$payment->payment_code}" value="{$payment->payment_code}" id="payment_method{$payment->payment_code}" {if $i == 0}checked="checked"{/if} />
+                        <div data-id="{$payment->payment_code}" class="payment_img {if $i == 0}active{/if}{if !$payment->image}hidden{/if}" style=""><img src="{$uploadDir}{$payment->image}" /></div>
                         <label style="float:left; margin-top: 6px;" class="method--name is--strong" for="payment_mean{$payment->payment_code}">{$payment->name}</label>
                     </div>
                 {/block}

@@ -10,6 +10,7 @@ class IcePay
     const GET_PAYMENT_METHODS = 'https://connect.icepay.com/webservice/api/v1/payment/GetMyPaymentMethods/';
     const PENDING = '/frontend/icepay/pendingPayment';
     const SUCCESS_URL = '/frontend/icepay/successfulPayment';
+    const POSTBACK_URL = '/frontend/icepay/postback';
     const FAIL_URL = '/frontend/icepay/failedPayment';
 
     public $_params;
@@ -36,6 +37,10 @@ class IcePay
 
     public function getFailUrl() {
         return 'http://'.Shopware()->Config()->Host.self::FAIL_URL;
+    }
+
+    public function getPostbackUrl() {
+        return 'http://'.Shopware()->Config()->Host.self::POSTBACK_URL;
     }
 
 

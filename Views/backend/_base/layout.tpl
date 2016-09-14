@@ -36,7 +36,7 @@
 <!--<script type="text/javascript" src="{link file="backend/_base/frame/postmessage-api.js"}"></script>-->
 <script type="text/javascript" src="{link file="backend/_resources/js/jquery-2.1.4.min.js"}"></script>
 <script type="text/javascript" src="{link file="backend/_resources/js/bootstrap.min.js"}"></script>
-
+<script type="text/javascript" src="{link file="backend/_resources/js/jquery-sortable.js"}"></script>
 {block name="content/layout/javascript"}
 <script type="text/javascript">
     $(function() {
@@ -173,6 +173,57 @@
         $('.js_payments_checkbox').on('click', function() {
             var id = $(this).val();
             $('.issuers'+id).prop('checked', ($(this).prop('checked') == true));
+        });
+    });
+    var oldContainer, oldContainer1;
+    $(function  () {
+        $(".sortable_payments").sortable({
+            group: 'no-drop',
+            handle: 'i.icon-move-payments',
+            itemPath: '> .payments-block',
+            itemSelector: '.sortable_li_payments',
+            onDragStart: function ($item, container, _super) {
+                if(!container.options.drop)
+                    $item.clone().insertAfter($item);
+                _super($item, container);
+            },
+            afterMove: function (placeholder, container) {
+                if(oldContainer != container){
+                    if(oldContainer)
+                        oldContainer.el.removeClass("active");
+                    container.el.addClass("active");
+
+                    oldContainer = container;
+                }
+            },
+            onDrop: function ($item, container, _super) {
+                container.el.removeClass("active");
+                _super($item, container);
+            }
+        });
+        $(".sortable_issuers").sortable({
+            group: 'no-drop',
+            handle: 'i.icon-move-issuers',
+            itemPath: '> .issuers-block',
+            itemSelector: '.sortable_li_issuers',
+            onDragStart: function ($item, container, _super) {
+                if(!container.options.drop)
+                    $item.clone().insertAfter($item);
+                _super($item, container);
+            },
+            afterMove: function (placeholder, container) {
+                if(oldContainer1 != container){
+                    if(oldContainer1)
+                        oldContainer1.el.removeClass("active");
+                    container.el.addClass("active");
+
+                    oldContainer1 = container;
+                }
+            },
+            onDrop: function ($item, container, _super) {
+                container.el.removeClass("active");
+                _super($item, container);
+            }
         });
     });
 </script>

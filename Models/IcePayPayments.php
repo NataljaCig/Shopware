@@ -36,6 +36,15 @@ class IcePayPayments extends ModelEntity
     public $name;
 
     /**
+     * @var string $image
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="image", type="string", length=255, nullable=false)
+     */
+    public $image;
+
+    /**
      * @var string $payment_code
      *
      * @Assert\NotBlank
@@ -56,9 +65,16 @@ class IcePayPayments extends ModelEntity
     /**
      * @var integer $state
      *
-     * @ORM\Column(name="state", type="integer", nullable=true)
+     * @ORM\Column(name="state", type="integer", nullable=false)
      */
-    public $state = null;
+    public $state = 0;
+
+    /**
+     * @var integer $state
+     *
+     * @ORM\Column(name="state_backend", type="integer", nullable=false)
+     */
+    public $state_backend = 0;
 
 
     /**
@@ -87,10 +103,10 @@ class IcePayPayments extends ModelEntity
         $querySender = new IcePayQuerySender($methodUrl, $headers, $queryArray);
         $response = $querySender->sendQuery();
         if (!isset($response['Message'])) {
-            $sql= "DELETE FROM s_ice_pay_payments WHERE 1";
+            $sql= "UPDATE s_ice_pay_payments SET state_backend = 0 WHERE 1";
             Shopware()->Db()->query($sql);
 
-            $sql= "DELETE FROM s_ice_pay_issuers WHERE 1";
+            $sql= "UPDATE s_ice_pay_issuers SET state_backend = 0 WHERE 1";
             Shopware()->Db()->query($sql);
         } else {
             var_dump('Have some problem');die();
@@ -104,9 +120,16 @@ class IcePayPayments extends ModelEntity
                 $payment->payment_code = $paymentMethod['PaymentMethodCode'];
                 $payment->position = $key + 1;
                 $payment->state = 0;
+                $payment->state_backend = 1;
 
                 Shopware()->Models()->persist($payment);
                 Shopware()->Models()->flush();
+            } else {
+                $payment[0]->state_backend = 1;
+
+                Shopware()->Models()->persist($payment[0]);
+                Shopware()->Models()->flush();
+
             }
             foreach ($paymentMethod['Issuers'] as $issuerKey => $issuer) {
                 $issuerExists = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i WHERE i.issuer_code = '{$issuer['IssuerKeyword']}'")
@@ -121,6 +144,11 @@ class IcePayPayments extends ModelEntity
                     $issuerModel->setArray($issuer, $issuerKey + 1, $payment_id);
 
                     Shopware()->Models()->persist($issuerModel);
+                    Shopware()->Models()->flush();
+                } else {
+                    $issuerExists[0]->state_backend = 1;
+
+                    Shopware()->Models()->persist($issuerExists[0]);
                     Shopware()->Models()->flush();
                 }
             }

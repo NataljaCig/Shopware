@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
+use Shopware\Plugins\Local\Frontend\IcePay\Models\IcePay as Icepay;
+
 class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     public function getVersion()
@@ -81,19 +83,20 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
             'label' => 'Test Mode (has access only for selected Users below)'
         ));
 
+        $model = new IcePay();
+
         $this->Form()->setElement('text', 'success-url', array(
-            'value' => '',
+            'value' => $this->getSuccessUrl() ?: $model->getSuccessfulUrl(),
             'label' => 'Return url on successful payment. If blank use "/frontend/icepay/successfulPayment"'
         ));
 
         $this->Form()->setElement('text', 'postback-url', array(
-            'value' => '',
+            'value' => $this->getPostbackUrl() ?: $model->getPostbackUrl(),
             'label' => 'Postback url. This is the page to which payment information will be sent.'
         ));
 
-
         $this->Form()->setElement('text', 'fail-url', array(
-            'value' => '',
+            'value' => $this->getFailUrl() ?: $model->getFailUrl(),
             'label' => 'Return url on failed payment. If blank use "/frontend/icepay/failPayment"'
         ));
 
@@ -183,6 +186,10 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
         return $this->Config()->get('fail-url');
     }
 
+    public function getPostbackUrl() {
+        return $this->Config()->get('postback-url');
+
+    }
 
     public function getTestUsersIds() {
         $usersIds = explode(',', $this->Config()->get('user_ids'));

@@ -46,6 +46,7 @@
     <script>
         $(document).ready(function(){
             $('.js_showHideIssuers').click(function () {
+                $('.payment_img').removeClass('active');
                 var id = $(this).data('id');
                 $('.payment_item').removeClass('active');
                 $(this).addClass('active');
@@ -55,6 +56,11 @@
                 $('.method--bankdata:not(.is-hidden)').addClass('is--hidden');
                 $('.issuers_'+id).removeClass('is--hidden');
                 $('#payment_method'+id).prop('checked',true);
+            });
+            $('.payment_img').click(function () {
+                $(this).parent().find('input.js_showHideIssuers').trigger('click');
+                $(this).addClass('active');
+                return;
             });
             var selectedId = $('input[name=payment]:checked').data('id');
             var el = $('input[name=payment]:checked').parent().parent().find('input[name=issuer]')[0];

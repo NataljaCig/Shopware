@@ -87,24 +87,20 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
             {
                 $order = Shopware()->Modules()->Order()->getOrderById(((int)$responseArray['OrderID'])-10000);
                 if ($order) {
+                    Shopware()->PluginLogger()->info("Info in: ".__CLASS__." ".__FUNCTION__." response: ".json_encode($responseArray));
                     $orderNumber = $this->saveOrder($responseArray['PaymentID']);
                     $orderId = $this->getOrderIdByOrderNumber($orderNumber);
                     $this->order->setPaymentStatus($orderId, \Shopware\Models\Order\Status::PAYMENT_STATE_COMPLETELY_PAID, true);
                     return $this->redirect('/checkout/finish/sUniqueID/'.$order['temporaryID']);
                 } else {
+                    Shopware()->PluginLogger()->warning("Warning in: ".__CLASS__." ".__FUNCTION__." order not found! response: ".json_encode($responseArray));
                     return $this->redirect('/');
                 }
 
             }
-            else
-            {
-                echo '<pre>';
-                var_dump($responseArray);die();
-                return false;   //TODO failed query
-            }
         }
-        echo '<pre>';
-        var_dump($responseArray);die();
+        Shopware()->PluginLogger()->error("Error in: ".__CLASS__." ".__FUNCTION__." send: ".json_encode($queryArray)." response: ".json_encode($responseArray));
+        return $this->redirect('/');
     }
 
 
@@ -142,8 +138,8 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
 
 
     public function indexAction() {
-        $payments = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.state = 1 ORDER BY p.position")->getResult();
-        $issuers = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i WHERE i.state = 1 ORDER BY i.position")->getResult();
+        $payments = Shopware()->Models()->createQuery("SELECT p FROM Shopware\CustomModels\IcePayPayments p WHERE p.state = 1 AND p.state_backend = 1 ORDER BY p.position")->getResult();
+        $issuers = Shopware()->Models()->createQuery("SELECT i FROM Shopware\CustomModels\IcePayIssuers i WHERE i.state = 1 AND i.state_backend = 1 ORDER BY i.position")->getResult();
         foreach ($payments as $k => $payment) {
             $payments[$k]->issuers = [];
             foreach ($issuers as $issuer) {
@@ -157,6 +153,7 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
             $payments[$k]->isEmptyIssuers = empty($payment->issuers);
         }
         $this->View()->assign('payments', $payments);
+        $this->View()->assign('uploadDir', "/files/images/icepay/");
         $this->View()->assign('routeToShippingItemTpl', __DIR__.'/../../Views/frontend/icepay/shipping_item.tpl');
         $this->View()->assign('routeToShippingStepsTpl', __DIR__.'/../../Views/frontend/icepay/steps.tpl');
     }
@@ -192,7 +189,6 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
 
         $userIp = $_SERVER['REMOTE_ADDR'];
 
-        //TODO Replace on checkout/finish
         $uniqueOrderId = Shopware()->Session()->offsetGet('sessionId');
         $orderId = $model->getOrderID($uniqueOrderId);
 
@@ -219,18 +215,12 @@ class Shopware_Controllers_Frontend_IcePay extends Enlight_Controller_Action
         {
             if (!isset($responseArray['Message']))
             {
+                Shopware()->PluginLogger()->info("Info in: ".__CLASS__." ".__FUNCTION__." send: ".json_encode($queryArray)." response: ".json_encode($responseArray));
                 return $this->redirect($responseArray['PaymentScreenURL']);
             }
-            else
-            {
-                echo '<pre>';
-                var_dump($responseArray);die();
-                return false;   //TODO failed query
-            }
         }
-        echo '<pre>';
-        var_dump($responseArray);die();
-        return false;   //TODO failed query
+        Shopware()->PluginLogger()->error("Error in: ".__CLASS__." ".__FUNCTION__." send: ".json_encode($queryArray)." response: ".json_encode($responseArray));
+        return $this->redirect('/');
     }
 
 
