@@ -81,7 +81,7 @@ class IcePayIssuers extends ModelEntity
         $this->payment_id = $payment_id;
         $this->position = $order;
         $this->state = 0;
-        $this->state_backend = 0;
+        $this->state_backend = 1;
     }
 
 }
