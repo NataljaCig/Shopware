@@ -31,12 +31,33 @@ class Shopware_Plugins_Frontend_IcePay_Bootstrap extends Shopware_Components_Plu
 
         $this->createConfig();
 
+        //$this->registerCustomModels();
+        $this->updateSchema();
         $this->registerBackendController();
         $this->createMenu();
         return array(
             'success' => true,
             'invalidateCache' => array('backend')
         );
+    }
+
+    protected function updateSchema()
+    {
+        $this->registerCustomModels();
+
+        $em = $this->Application()->Models();
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+
+        $classes = array(
+            $em->getClassMetadata('Shopware\CustomModels\IcePayIssuers'),
+            $em->getClassMetadata('Shopware\CustomModels\IcePayPayments')
+        );
+
+       try {
+            $tool->dropSchema($classes);
+        } catch (Exception $e) {
+        }
+        $tool->createSchema($classes);
     }
 
 

@@ -38,11 +38,9 @@ class IcePayPayments extends ModelEntity
     /**
      * @var string $image
      *
-     * @Assert\NotBlank
-     *
-     * @ORM\Column(name="image", type="string", length=255, nullable=false)
+     * @ORM\Column(name="image", type="string", length=255, nullable=true)
      */
-    public $image;
+    public $image = null;
 
     /**
      * @var string $payment_code
